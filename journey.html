@@ -27,6 +27,7 @@
     - Colors are hex numbers: 0xe08a5b.   Units are meters-like; a person is about 2.5 tall.
     - person(g,{x,z,c:shirtColor,acc:'glasses'|'cap'|'helmet'|'headset'|'tie'|'clip'|'laptop',
                 wave:true | talk:true | sit:true | walk:[x1,z1,x2,z2]})
+    - person(...,say:"salam"|"nabi"|"pool"|"pool:ar"|"line:id"|"text"): speech bubble, texts live in SPEECH
     - Keep a place at least 30 units away from its neighbours so the buildings do not overlap.
 -->
   <head>
@@ -230,6 +231,37 @@
         color: var(--muted);
         font-size: 0.68rem;
         text-align: center;
+      }
+      .bubble {
+        position: fixed;
+        z-index: 5;
+        pointer-events: none;
+        transform: translate(-50%, -100%);
+        max-width: 230px;
+        background: #fff;
+        color: var(--ink);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 8px 12px;
+        font-weight: 700;
+        font-size: 0.8rem;
+        line-height: 1.45;
+        text-align: center;
+        opacity: 0;
+        transition: opacity 0.25s;
+        box-shadow: 0 6px 18px rgba(40, 50, 60, 0.16);
+      }
+      .bubble::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        bottom: -7px;
+        width: 12px;
+        height: 12px;
+        background: #fff;
+        border-right: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        transform: translateX(-50%) rotate(45deg);
       }
       #prompt {
         left: 50%;
@@ -718,6 +750,55 @@
       /* ============================================================
    1. CONTENT: edit your journey here
    ============================================================ */
+      /* ============ WHAT THE PEOPLE SAY (easy to edit) ============
+         In the 3D world, people near you show a speech bubble.
+         person(g,{... say:"salam"})        always: السلام عليكم
+         person(g,{... say:"nabi"})         always: صلّ على النبي
+         person(g,{... say:"pool"})         a random line from POOL (Arabic or English)
+         person(g,{... say:"pool:ar"})      random Arabic line  ("pool:en" for English)
+         person(g,{... say:"line:ops"})     one fixed line from LINES below
+         person(g,{... say:"Any text"})     your own fixed text
+         Add a new joke or tip: add { l: "en" or "ar", t: "text" } to POOL. */
+      var SPEECH = {
+        salam: "السلام عليكم",
+        nabi: "صلِّ على النبي ﷺ",
+        lines: {
+          dig1: "He joined as a junior and left as a senior.",
+          dig2: "He taught me half of what I know.",
+          ops: "يا إلهي، نحن نعمل ليل نهار على مشاكل من عالم آخر!",
+          lead: "التعامل مع الشخصيات المختلفة أصعب من حل أي إشكالية.",
+          skills: "لا نؤجل عمل اليوم إلى الغد بإذن الله.",
+        },
+        pool: [
+          { l: "en", t: "A SQL query walks into a bar, sees two tables and asks: can I JOIN you?" },
+          { l: "en", t: "Index the columns you filter and join on. Not every column." },
+          { l: "en", t: "Prefer composition over inheritance. Your future self will thank you." },
+          { l: "en", t: "Single Responsibility: if you need an 'and' to describe a class, split it." },
+          { l: "en", t: "Retry with backoff, not in a tight loop. Servers have feelings too." },
+          { l: "en", t: "N+1 queries are a silent performance killer. Fetch in one go." },
+          { l: "en", t: "It works on my machine. Fine, let's ship the machine." },
+          { l: "en", t: "Give the AI context, constraints and an example. Then review everything." },
+          { l: "en", t: "Treat AI output like a pull request from a very fast junior." },
+          { l: "en", t: "Idempotent endpoints make retries safe." },
+          { l: "en", t: "Log the why, not only the what." },
+          { l: "en", t: "Dependency injection: ask for what you need, do not build it." },
+          { l: "en", t: "Transactions are all or nothing, like my diet." },
+          { l: "en", t: "Two hard things: cache invalidation, naming things, and off-by-one errors." },
+          { l: "ar", t: "جملة SQL دخلت كافيه وسألت: ممكن أعمل JOIN معاكم؟" },
+          { l: "ar", t: "الـ Index زي فهرس الكتاب، بس فهرس لكل صفحة مش هيفرق." },
+          { l: "ar", t: "لا تثق في كود الـ AI قبل ما تقرأه، اعتبره Pull Request من مطور سريع جدًا." },
+          { l: "ar", t: "اسم المتغير الواضح أحسن من تعليق طويل." },
+          { l: "ar", t: "الـ Cache مفيد، بس الأصعب هو متى تمسحه." },
+          { l: "ar", t: "اللي بيكتب Test النهارده بينام مرتاح بعد الـ Release." },
+          { l: "ar", t: "قبل ما تضيف Design Pattern اسأل: هل عندي مشكلة فعلًا؟" },
+          { l: "ar", t: "مع الـ AI: كل ما كان السياق أوضح، كان الناتج أدق." },
+          { l: "ar", t: "الـ Backup اللي ما اتجربش استرجاعه، مش Backup." },
+          { l: "ar", t: "Deploy يوم الخميس؟ دي مغامرة مش خطة." },
+          { l: "ar", t: "الـ Logging الجيد بيوفر ساعات من التخمين." },
+          { l: "ar", t: "قسّم المشكلة الكبيرة لخطوات صغيرة، وجرّب كل خطوة لوحدها." },
+        ],
+      };
+
       var STOPS = [
         {
           id: "uni",
@@ -1229,6 +1310,25 @@ STOPS[0].html +=
         }
         ground.geometry.computeVertexNormals();
         var animators = [];
+        var talkers = [];
+        function speakLine(k) {
+          var s = k.say;
+          if (s === "salam") return SPEECH.salam;
+          if (s === "nabi") return SPEECH.nabi;
+          if (s.indexOf("line:") === 0) return SPEECH.lines[s.slice(5)] || "";
+          if (s.indexOf("pool") === 0) {
+            var lang = s.split(":")[1];
+            var list = SPEECH.pool.filter(function (x) {
+              return !lang || x.l === lang;
+            });
+            var i = Math.floor(Math.random() * list.length);
+            if (list.length > 1 && i === k.last) i = (i + 1) % list.length;
+            k.last = i;
+            return list[i].t;
+          }
+          return s;
+        }
+
         var WORLD_MIN_Z =
           Math.min.apply(
             null,
@@ -1811,6 +1911,13 @@ STOPS[0].html +=
           p.position.set(o.x, o.y || 0, o.z);
           p.rotation.y = o.r || 0;
           g.add(p);
+          if (o.say) {
+            var bub = document.createElement("div");
+            bub.className = "bubble";
+            bub.setAttribute("dir", "auto");
+            $("#labels").appendChild(bub);
+            talkers.push({ p: p, say: String(o.say), el: bub, scale: o.s || 1, on: false, t0: 0, last: -1 });
+          }
           var ph = Math.random() * 6,
             seg = o.walk;
           if (o.sit) {
@@ -1976,7 +2083,7 @@ STOPS[0].html +=
           bush(g, 8, 3, 1.2);
           bush(g, -9, -4, 1.4);
           bush(g, 9, -3, 1);
-          person(g, { x: -2, z: 5, c: 0x8a7bd1, acc: "glasses", wave: true, r: 0.3 }); /* professor */
+          person(g, { say: "salam", x: -2, z: 5, c: 0x8a7bd1, acc: "glasses", wave: true, r: 0.3 }); /* professor */
           person(g, {
             x: 3,
             z: 7.5,
@@ -1986,10 +2093,10 @@ STOPS[0].html +=
             r: 3.14,
             hair: 0x2b2b2b,
           }); /* student reading */
-          person(g, { x: 0, z: 0, c: 0x6aa6c8, walk: [-8, 10, 8, 10], speed: 0.06, acc: "laptop" });
-          person(g, { x: 0, z: 0, c: 0xf6a8b6, walk: [7, -5, 7, 5], speed: 0.05, hair: 0x6b3e2e });
-          person(g, { x: -4, z: 8.6, c: 0x7cc496, talk: true, r: -0.8, hair: 0x1f1f1f });
-          person(g, { x: -5.6, z: 8.2, c: 0xf2c14e, talk: true, r: 0.8, acc: "glasses" });
+          person(g, { x: 0, z: 0, say: "pool:en", c: 0x6aa6c8, walk: [-8, 10, 8, 10], speed: 0.06, acc: "laptop" });
+          person(g, { x: 0, z: 0, say: "nabi", c: 0xf6a8b6, walk: [7, -5, 7, 5], speed: 0.05, hair: 0x6b3e2e });
+          person(g, { say: "pool:ar", x: -4, z: 8.6, c: 0x7cc496, talk: true, r: -0.8, hair: 0x1f1f1f });
+          person(g, { say: "pool:en", x: -5.6, z: 8.2, c: 0xf2c14e, talk: true, r: 0.8, acc: "glasses" });
         };
         decor.dig = function (g) {
           lamp(g, -9, 5);
@@ -1998,12 +2105,12 @@ STOPS[0].html +=
           bush(g, -9, 0, 1.3, 0x7cc496);
           bush(g, 9.3, 0, 1.2, 0x7cc496);
           /* mentor and mentees */
-          person(g, { x: -1.5, z: 4.5, c: 0x2f8f83, talk: true, r: 0.3, acc: "tie" });
-          person(g, { x: 1, z: 4.6, c: 0xe08a5b, r: -0.4, acc: "laptop" });
-          person(g, { x: 2.8, z: 3.9, c: 0x9a85d6, r: -0.7, hair: 0x6b3e2e, acc: "glasses" });
-          person(g, { x: 0, z: 0, c: 0x6aa6c8, walk: [-8, 8, 8, 8], speed: 0.05 });
-          person(g, { x: 7.5, z: 2, c: 0xf2c14e, acc: "clip", r: -1.2 }); /* client */
-          person(g, { x: -8, z: 2.4, c: 0x7cc496, wave: true, r: 0.8 });
+          person(g, { say: "line:dig1", x: -1.5, z: 4.5, c: 0x2f8f83, talk: true, r: 0.3, acc: "tie" });
+          person(g, { say: "line:dig2", x: 1, z: 4.6, c: 0xe08a5b, r: -0.4, acc: "laptop" });
+          person(g, { say: "pool:ar", x: 2.8, z: 3.9, c: 0x9a85d6, r: -0.7, hair: 0x6b3e2e, acc: "glasses" });
+          person(g, { x: 0, z: 0, say: "pool:en", c: 0x6aa6c8, walk: [-8, 8, 8, 8], speed: 0.05 });
+          person(g, { say: "salam", x: 7.5, z: 2, c: 0xf2c14e, acc: "clip", r: -1.2 }); /* client */
+          person(g, { say: "nabi", x: -8, z: 2.4, c: 0x7cc496, wave: true, r: 0.8 });
           /* planter boxes */
           for (var i = 0; i < 4; i++) {
             box(g, 1.4, 0.7, 1.4, 0x8a6a4b, -5 + i * 3.3, 0, 9.2);
@@ -2015,10 +2122,10 @@ STOPS[0].html +=
           box(g, 3.4, 1, 1.6, 0x8a6a4b, -4, 0, 6.5);
           box(g, 1, 0.7, 0.1, 0x27323a, -4.4, 1.4, 6.6);
           box(g, 1, 0.7, 0.1, 0x27323a, -3.2, 1.4, 6.6);
-          person(g, { x: -4, z: 7.8, c: 0x6aa6c8, acc: "headset", r: 3.14, sit: true });
-          person(g, { x: 4, z: 4, c: 0xe08a5b, acc: "glasses", talk: true, r: -1.5 });
-          person(g, { x: 6.5, z: 3.5, c: 0x7cc496, r: 1.6, acc: "laptop" });
-          person(g, { x: 0, z: 0, c: 0x9a85d6, walk: [2, 9, -8, 9], speed: 0.05, acc: "clip" });
+          person(g, { say: "line:ops", x: -4, z: 7.8, c: 0x6aa6c8, acc: "headset", r: 3.14, sit: true });
+          person(g, { say: "salam", x: 4, z: 4, c: 0xe08a5b, acc: "glasses", talk: true, r: -1.5 });
+          person(g, { say: "pool:en", x: 6.5, z: 3.5, c: 0x7cc496, r: 1.6, acc: "laptop" });
+          person(g, { x: 0, z: 0, say: "pool:ar", c: 0x9a85d6, walk: [2, 9, -8, 9], speed: 0.05, acc: "clip" });
           lamp(g, 8, 7);
           lamp(g, -8, -5);
           bench(g, 6, 9, 0.2);
@@ -2052,12 +2159,13 @@ STOPS[0].html +=
             acc: "tie",
             talk: true,
             r: 0.3,
+            say: "line:lead",
             s: 1.05,
           }); /* the lead greeting */
-          person(g, { x: -6, z: 7.5, c: 0x7cc496, r: 0.6, acc: "glasses" }); /* QA */
-          person(g, { x: 6, z: 7, c: 0xf6a8b6, acc: "clip", r: -0.7, hair: 0x6b3e2e });
-          person(g, { x: 7.8, z: 5.5, c: 0xf2c14e, acc: "laptop", r: -1.1 }); /* analysts */
-          person(g, { x: 0, z: 0, c: 0x27323a, walk: [-9, 3, -9, -6], speed: 0.04, acc: "tie" });
+          person(g, { say: "pool:en", x: -6, z: 7.5, c: 0x7cc496, r: 0.6, acc: "glasses" }); /* QA */
+          person(g, { say: "salam", x: 6, z: 7, c: 0xf6a8b6, acc: "clip", r: -0.7, hair: 0x6b3e2e });
+          person(g, { say: "pool:ar", x: 7.8, z: 5.5, c: 0xf2c14e, acc: "laptop", r: -1.1 }); /* analysts */
+          person(g, { x: 0, z: 0, say: "nabi", c: 0x27323a, walk: [-9, 3, -9, -6], speed: 0.04, acc: "tie" });
           /* banners */
           [-1, 1].forEach(function (s) {
             box(g, 0.15, 5, 0.15, 0x8a6a4b, s * 3, 0.4, 3.7);
@@ -2085,9 +2193,9 @@ STOPS[0].html +=
           lamp(g, 8, 6);
           lamp(g, -8, 7);
           bench(g, 0, 8.5, 0);
-          person(g, { x: -5.5, z: 5, c: 0xe08a5b, talk: true, acc: "cap", cap: 0x2f8f83, r: -0.4 });
-          person(g, { x: -3.7, z: 5.6, c: 0x6aa6c8, r: 0.4, acc: "glasses" });
-          person(g, { x: 0, z: 0, c: 0x9a85d6, walk: [5, 9, -3, 9], speed: 0.06, hair: 0x6b3e2e });
+          person(g, { say: "line:skills", x: -5.5, z: 5, c: 0xe08a5b, talk: true, acc: "cap", cap: 0x2f8f83, r: -0.4 });
+          person(g, { say: "pool:en", x: -3.7, z: 5.6, c: 0x6aa6c8, r: 0.4, acc: "glasses" });
+          person(g, { x: 0, z: 0, say: "pool:ar", c: 0x9a85d6, walk: [5, 9, -3, 9], speed: 0.06, hair: 0x6b3e2e });
           /* anvil and shelves */
           box(g, 1.2, 0.4, 0.7, 0x27323a, -5, 1.7, 4);
           [0x2f8f83, 0xe08a5b, 0x8a7bd1, 0xf2c14e].forEach(function (c, i) {
@@ -2096,10 +2204,10 @@ STOPS[0].html +=
           for (var i = 0; i < 5; i++) bush(g, -9 + i * 4.5, 10.5, 0.55, i % 2 ? 0xc7a8f0 : 0xffd36e);
         };
         decor.lab = function (g) {
-          person(g, { x: -1, z: 4.5, c: 0xf2c14e, acc: "helmet", talk: true, r: 0.4 });
-          person(g, { x: 2.5, z: 3.8, c: 0x6aa6c8, acc: "helmet", r: -0.5 });
-          person(g, { x: -6.5, z: 4, c: 0xe08a5b, acc: "helmet", wave: true, r: 0.5 });
-          person(g, { x: 0, z: 0, c: 0x7cc496, acc: "helmet", walk: [-8, 10, 8, 10], speed: 0.05 });
+          person(g, { say: "salam", x: -1, z: 4.5, c: 0xf2c14e, acc: "helmet", talk: true, r: 0.4 });
+          person(g, { say: "pool:en", x: 2.5, z: 3.8, c: 0x6aa6c8, acc: "helmet", r: -0.5 });
+          person(g, { say: "nabi", x: -6.5, z: 4, c: 0xe08a5b, acc: "helmet", wave: true, r: 0.5 });
+          person(g, { x: 0, z: 0, say: "pool:ar", c: 0x7cc496, acc: "helmet", walk: [-8, 10, 8, 10], speed: 0.05 });
           /* cones, barrier, crates stack (containers) */
           [-8.5, -7, 7, 8.5].forEach(function (x, i) {
             cone(g, 0.5, 1.3, 0xff8a3d, x, 0, 9.3, 7);
@@ -2139,10 +2247,11 @@ STOPS[0].html +=
               c: [0xe08a5b, 0x6aa6c8, 0x9a85d6, 0x7cc496][i],
               sit: true,
               r: Math.atan2(-p[0], -p[1]),
+              say: i % 2 ? "pool:ar" : "pool:en",
               hair: i % 2 ? 0x6b3e2e : 0x1f1f1f,
             });
           });
-          person(g, { x: 7.5, z: 6, c: 0x2f8f83, wave: true, r: -0.9 });
+          person(g, { say: "salam", x: 7.5, z: 6, c: 0x2f8f83, wave: true, r: -0.9 });
           lamp(g, 8, -4);
           lamp(g, -8, 5);
           bush(g, -9, -2, 1.2);
@@ -2801,6 +2910,35 @@ STOPS[0].html +=
             var d = Math.hypot(player.position.x - o.pos.x, player.position.z - o.pos.z);
             place(o.label, o.pos, i === undefined ? 0 : o.g ? 15 : 5, d < 95 ? 1 : 0);
           });
+          /* speech bubbles: the 3 nearest talkers show a line */
+          var nowMs = performance.now(),
+            wpos = new THREE.Vector3();
+          talkers.forEach(function (k) {
+            k.p.getWorldPosition(wpos);
+            k.wx = wpos.x;
+            k.wz = wpos.z;
+            k.d = Math.hypot(player.position.x - wpos.x, player.position.z - wpos.z);
+          });
+          talkers
+            .slice()
+            .sort(function (a, b) {
+              return a.d - (a.say.indexOf("line:") === 0 ? 8 : 0) - (b.d - (b.say.indexOf("line:") === 0 ? 8 : 0));
+            })
+            .forEach(function (k, idx) {
+              if (idx < (W < 600 ? 2 : 3) && k.d < 11) {
+                if (!k.on || (k.say.indexOf("pool") === 0 && nowMs - k.t0 > 9000)) {
+                  k.on = true;
+                  k.t0 = nowMs;
+                  k.el.textContent = speakLine(k);
+                }
+                place(k.el, { x: k.wx, z: k.wz }, 3.9 * k.scale, 1);
+                var bx = parseFloat(k.el.style.left);
+                k.el.style.left = Math.min(W - 120, Math.max(120, bx)) + "px";
+              } else {
+                k.on = false;
+                k.el.style.opacity = 0;
+              }
+            });
           place(nameTag, player.position, 4.2, 1);
           renderer.render(scene, camera);
         }
