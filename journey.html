@@ -105,6 +105,8 @@
         pointer-events: auto;
       }
       .btn {
+        display: inline-block;
+        text-decoration: none;
         font: inherit;
         font-weight: 700;
         font-size: 0.85rem;
@@ -345,7 +347,9 @@
         flex-wrap: wrap;
         gap: 6px;
       }
+      .chips a,
       .chips span {
+        text-decoration: none;
         background: var(--soft);
         color: #1f6b62;
         border-radius: 999px;
@@ -705,6 +709,12 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
+      /* Fallback CDN if the first one is blocked */
+      if (!window.THREE) {
+        document.write('<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"><\/script>');
+      }
+    </script>
+    <script>
       /* ============================================================
    1. CONTENT: edit your journey here
    ============================================================ */
@@ -799,7 +809,7 @@
           pos: [0, -270],
           html:
             "<p>If you want a lead who also writes and reviews the code, or a senior engineer who can make sense of a system nobody documented, I would like to hear from you.</p>" +
-            '<div class="chips"><span>ahosny2420@gmail.com</span></div><p style="margin-top:10px"><a href="https://www.linkedin.com/in/ahmed-hosny-975286133/">LinkedIn</a> · <a href="https://github.com/ahossny61">GitHub</a> · <a href="https://www.hackerrank.com/ahossny61">HackerRank</a> · <a href="https://codeforces.com/profile/ahossny61">Codeforces</a> · <a href="https://www.outsystems.com/forge/component-overview/13066/client-side-form-validation">OutSystems Forge component</a></p>',
+            '<div class="chips"><a href="mailto:ahosny2420@gmail.com?subject=Hello%20Ahmed">ahosny2420@gmail.com</a><a href="tel:+966544102467">+966 54 410 2467</a></div><p style="margin-top:10px"><a href="https://www.linkedin.com/in/ahmed-hosny-975286133/">LinkedIn</a> · <a href="https://github.com/ahossny61">GitHub</a> · <a href="https://www.hackerrank.com/ahossny61">HackerRank</a> · <a href="https://codeforces.com/profile/ahossny61">Codeforces</a> · <a href="https://www.outsystems.com/forge/component-overview/13066/client-side-form-validation">OutSystems Forge component</a></p>',
         },
       ];
 
@@ -899,13 +909,13 @@ STOPS[0].html +=
 
       /* ---- views: 3D world, journey map, classic page ---- */
       window.VIEW = "world";
-      var PORTFOLIO_URL = "https://ahossny61.github.io/portfolio/";
+      var PORTFOLIO_URL = "index.html";
       function buildClassic() {
         var c = $("#classic");
         c.innerHTML =
           '<div class="wrapc"><h1>Ahmed Hosny</h1><p class="lead">Technical Team Lead and Senior OutSystems Developer, Riyadh. This is the classic reading version of the journey. <button class="btn" type="button" data-3d="0">Walk it in 3D instead</button> <a href="' +
           PORTFOLIO_URL +
-          '">Open the full portfolio page</a></p><div class="chips" style="margin:0 0 6px"><span>ahosny2420@gmail.com</span><span>+966 54 410 2467</span></div><p style="margin:0 0 20px"><a href="#contact-links" id="moreContact">More ways to contact me</a></p>' +
+          '">Open the full portfolio page</a></p><p style="margin:0 0 10px"><a class="btn" href="Ahmed_Hosny_CV_Senior_Software_Developer.pdf" target="_blank" rel="noopener"><b>Open my CV (PDF)</b></a></p><div class="chips" style="margin:0 0 6px"><a href="mailto:ahosny2420@gmail.com?subject=Hello%20Ahmed">ahosny2420@gmail.com</a><a href="tel:+966544102467">+966 54 410 2467</a></div><p style="margin:0 0 20px"><a href="#contact-links" id="moreContact">More ways to contact me</a></p>' +
           STOPS.map(function (s, i) {
             return (
               '<section class="ccard"><div class="when">' +
@@ -923,7 +933,7 @@ STOPS[0].html +=
               " in 3D</button></section>"
             );
           }).join("") +
-          '<section class="ccard" id="contact-links"><div class="when">Contact</div><h2>Let us talk</h2><div class="org">Riyadh, Saudi Arabia</div><div class="body"><div class="chips"><span>ahosny2420@gmail.com</span><span>+966 54 410 2467</span></div><h3>Find me online</h3><ul><li><a href="https://www.linkedin.com/in/ahmed-hosny-975286133/">LinkedIn</a></li><li><a href="https://github.com/ahossny61">GitHub</a></li><li><a href="https://www.hackerrank.com/ahossny61">HackerRank</a></li><li><a href="https://codeforces.com/profile/ahossny61">Codeforces</a></li><li><a href="https://www.outsystems.com/forge/component-overview/13066/client-side-form-validation">OutSystems Forge component</a></li></ul></div></section></div>';
+          '<section class="ccard" id="contact-links"><div class="when">Contact</div><h2>Let us talk</h2><div class="org">Riyadh, Saudi Arabia</div><div class="body"><div class="chips"><a href="mailto:ahosny2420@gmail.com?subject=Hello%20Ahmed">ahosny2420@gmail.com</a><a href="tel:+966544102467">+966 54 410 2467</a></div><h3>Find me online</h3><ul><li><a href="https://www.linkedin.com/in/ahmed-hosny-975286133/">LinkedIn</a></li><li><a href="https://github.com/ahossny61">GitHub</a></li><li><a href="https://www.hackerrank.com/ahossny61">HackerRank</a></li><li><a href="https://codeforces.com/profile/ahossny61">Codeforces</a></li><li><a href="https://www.outsystems.com/forge/component-overview/13066/client-side-form-validation">OutSystems Forge component</a></li></ul></div></section></div>';
         var mc = c.querySelector("#moreContact");
         mc.onclick = function (e) {
           e.preventDefault();
