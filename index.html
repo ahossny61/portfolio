@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ahmed Hosny Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a release-train ledger. A left spine of dated stops, each stop opens into the detail behind it. */
+:root{
+  --paper:#F3F5F2; --card:#FFFFFF; --ink:#15201F; --muted:#56635F; --line:#D3DBD6;
+  --accent:#0F5C5A; --accent-soft:#DDEBE8; --amber:#8F5600; --amber-soft:#F5E6C8;
+  --display:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1514; --card:#152120; --ink:#E6EDEA; --muted:#9BAAA5; --line:#2A3835;
+    --accent:#6CCBC4; --accent-soft:#16312F; --amber:#E2AE55; --amber-soft:#3A2D14;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1514; --card:#152120; --ink:#E6EDEA; --muted:#9BAAA5; --line:#2A3835;
+  --accent:#6CCBC4; --accent-soft:#16312F; --amber:#E2AE55; --amber-soft:#3A2D14;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.6 var(--body);-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-underline-offset:3px}
+a:focus-visible,summary:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.wrap{max-width:960px;margin:0 auto;padding:0 20px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+h2{font-size:1.5rem;font-weight:700;letter-spacing:-.01em}
+p{margin:0 0 .8em;max-width:68ch}
+ul,ol{margin:.4em 0 .8em;padding-left:1.2em}
+li{margin:.25em 0;max-width:72ch}
+.mono{font-family:var(--mono);font-size:.78rem;letter-spacing:.02em;color:var(--muted)}
+
+/* header */
+header.top{padding:48px 0 28px;border-bottom:1px solid var(--line)}
+.hd{display:grid;grid-template-columns:1fr;gap:18px}
+.eyebrow{font-family:var(--mono);font-size:.8rem;color:var(--accent);text-transform:uppercase;letter-spacing:.08em}
+h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.08;font-weight:700;letter-spacing:-.02em;margin:6px 0 10px}
+.lead{font-size:1.12rem;color:var(--ink);max-width:62ch}
+.links{display:flex;flex-wrap:wrap;gap:8px 10px;margin-top:6px}
+.links a{font-family:var(--mono);font-size:.8rem;text-decoration:none;border:1px solid var(--line);background:var(--card);padding:6px 10px;border-radius:6px;color:var(--ink)}
+.links a:hover{border-color:var(--accent);color:var(--accent)}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:26px}
+.fact{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+.fact b{display:block;font-size:1.7rem;line-height:1.1;font-weight:700;font-variant-numeric:tabular-nums;color:var(--accent)}
+.fact span{font-size:.84rem;color:var(--muted)}
+
+nav.jump{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+nav.jump .wrap{display:flex;gap:6px 18px;align-items:center;flex-wrap:wrap;padding-top:10px;padding-bottom:10px}
+nav.jump a{font-family:var(--mono);font-size:.78rem;text-decoration:none;color:var(--muted)}
+nav.jump a:hover{color:var(--accent)}
+nav.jump button{margin-left:auto;font:500 .78rem var(--mono);color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:6px;padding:6px 10px;cursor:pointer}
+nav.jump button:hover{border-color:var(--accent)}
+
+section{padding:44px 0 8px;scroll-margin-top:56px}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:6px}
+.sec-head .mono{white-space:nowrap}
+.sub{color:var(--muted);margin-bottom:20px;max-width:64ch}
+
+/* disclosure */
+details{border:0}
+summary{cursor:pointer;list-style:none}
+summary::-webkit-details-marker{display:none}
+.chev{position:relative;width:22px;height:22px;flex:none;border:1px solid var(--line);border-radius:50%;background:var(--card)}
+.chev::before,.chev::after{content:"";position:absolute;left:50%;top:50%;width:9px;height:1.5px;background:var(--muted);transform:translate(-50%,-50%)}
+.chev::after{transform:translate(-50%,-50%) rotate(90deg);transition:transform .2s}
+details[open]>summary .chev::after{transform:translate(-50%,-50%) rotate(0)}
+@media (prefers-reduced-motion:reduce){.chev::after{transition:none}html{scroll-behavior:auto}}
+
+/* timeline */
+.spine{position:relative;margin-left:8px;padding-left:28px;border-left:2px solid var(--line)}
+.stop{position:relative;margin:0 0 18px}
+.stop::before{content:"";position:absolute;left:-37px;top:22px;width:14px;height:14px;border-radius:50%;background:var(--paper);border:3px solid var(--accent)}
+.role{background:var(--card);border:1px solid var(--line);border-radius:10px}
+.role>summary{display:flex;gap:14px;align-items:flex-start;padding:16px 18px}
+.role .meta{flex:1;min-width:0}
+.role .when{font-family:var(--mono);font-size:.78rem;color:var(--accent)}
+.role h3{font-size:1.15rem;font-weight:600;margin:2px 0 2px}
+.role .org{color:var(--muted);font-size:.92rem}
+.role .one{margin:6px 0 0;font-size:.97rem}
+.role .body{padding:2px 18px 16px 18px;border-top:1px dashed var(--line);margin:0 0}
+.role .body>*:first-child{margin-top:14px}
+.role h4{font-size:.78rem;font-family:var(--mono);text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:16px 0 4px;font-weight:500}
+.inner{border:1px solid var(--line);border-radius:8px;margin:10px 0;background:var(--paper)}
+.inner>summary{display:flex;align-items:center;gap:10px;padding:10px 12px;font-weight:600;font-size:.95rem}
+.inner .in{padding:0 14px 12px 14px}
+.inner .in>*:first-child{margin-top:4px}
+
+/* cards */
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.card h3{font-size:1.02rem;font-weight:600;margin-bottom:6px}
+.card.dis{padding:0}
+.card.dis>summary{display:flex;gap:10px;align-items:flex-start;padding:14px 16px}
+.card.dis>summary h3{margin:0}
+.card.dis>summary .t{flex:1}
+.card.dis>summary .s{display:block;color:var(--muted);font-size:.88rem;margin-top:2px}
+.card.dis .in{padding:0 16px 14px 16px;border-top:1px dashed var(--line)}
+.card.dis .in>*:first-child{margin-top:12px}
+.tag{display:inline-block;font-family:var(--mono);font-size:.7rem;border:1px solid var(--line);padding:1px 7px;border-radius:99px;color:var(--muted);margin-right:6px;background:var(--paper)}
+.case dl{margin:0;display:grid;grid-template-columns:100px 1fr;gap:6px 14px}
+.case dt{font-family:var(--mono);font-size:.74rem;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);padding-top:3px}
+.case dd{margin:0}
+
+/* growth + skills */
+.pill{font-family:var(--mono);font-size:.7rem;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.pill.now{background:var(--accent-soft);color:var(--accent)}
+.pill.next{background:var(--amber-soft);color:var(--amber)}
+.rows{border:1px solid var(--line);border-radius:10px;background:var(--card);overflow:hidden}
+.row{display:flex;gap:14px;justify-content:space-between;align-items:baseline;padding:11px 16px;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.row div b{font-weight:600}
+.row div span{display:block;color:var(--muted);font-size:.88rem}
+.skillgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.skillgrid .card h3{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips span{font-size:.84rem;border:1px solid var(--line);background:var(--paper);padding:3px 9px;border-radius:6px}
+footer{margin-top:56px;border-top:1px solid var(--line);padding:26px 0 56px;color:var(--muted);font-size:.9rem}
+
+@media (max-width:760px){
+  .facts{grid-template-columns:repeat(2,1fr)}
+  .grid2,.skillgrid{grid-template-columns:1fr}
+  .case dl{grid-template-columns:1fr}
+  .case dt{padding-top:8px}
+  .spine{padding-left:20px}
+  .stop::before{left:-29px}
+  nav.jump button{margin-left:0}
+}
+#growth .card.dis{margin-bottom:14px}
+#growth .in .rows{margin-top:10px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap hd">
+    <div>
+      <div class="eyebrow">Riyadh, Saudi Arabia</div>
+      <h1>Ahmed Hosny</h1>
+      <p class="lead">Technical Team Lead and Senior OutSystems Developer. I lead a team of six developers and own the delivery cycle from backlog to production for government platforms, with a full-stack background in .NET and ABP.</p>
+      <div class="links">
+        <a href="https://www.linkedin.com/in/ahmed-hosny-975286133/">LinkedIn</a>
+        <a href="https://github.com/ahossny61">GitHub</a>
+        <a href="https://www.hackerrank.com/ahossny61">HackerRank</a>
+        <a href="https://codeforces.com/profile/ahossny61">Codeforces</a>
+        <a href="https://www.outsystems.com/forge/component-overview/13066/client-side-form-validation">OutSystems Forge component</a>
+        <a href="mailto:ahosny2420@gmail.com">ahosny2420@gmail.com</a>
+        <a href="https://claude.ai/artifact/JsVq3DBqy4xmH6UzMpucSd"><b>Walk my journey in 3D</b></a>
+      </div>
+    </div>
+    <div class="facts" aria-label="At a glance">
+      <div class="fact"><b>5+</b><span>years in enterprise delivery since Jul 2021</span></div>
+      <div class="fact"><b>6</b><span>developers led, 5 of them senior</span></div>
+      <div class="fact"><b>~30</b><span>two-week sprints and production releases as team lead</span></div>
+      <div class="fact"><b>400+</b><span>applications on the OutSystems 11 platform</span></div>
+    </div>
+  </div>
+</header>
+
+<nav class="jump" aria-label="Sections">
+  <div class="wrap">
+    <a href="#path">Path</a>
+    <a href="#projects">Projects</a>
+    <a href="#challenges">Challenges</a>
+    <a href="#strengths">Strengths</a>
+    <a href="#growth">Learning</a>
+    <a href="#skills">Skills</a>
+    <a href="#education">Education</a>
+    <button type="button" id="toggleAll" aria-pressed="false">Expand all</button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- PATH -->
+<section id="path">
+  <div class="sec-head"><span class="mono">01</span><h2>Career path</h2></div>
+  <p class="sub">Three steps in one direction: developer, then the person who keeps a live system understood and running, then the person who leads the team that changes it. Open any stop for the detail.</p>
+
+  <div class="spine">
+
+    <div class="stop">
+      <details class="role" open>
+        <summary>
+          <span class="meta">
+            <span class="when">Aug 2025 – Present</span>
+            <h3>Technical Team Lead</h3>
+            <span class="org">Sure, outsourced to Infath (Assignment and Liquidation Center)</span>
+            <p class="one">Lead the Beneficiaries portfolio team and own its sprint, quality, and release cycle.</p>
+          </span>
+          <span class="chev" aria-hidden="true"></span>
+        </summary>
+        <div class="body">
+          <h4>What I own</h4>
+          <ul>
+            <li>A team of 6 developers (5 senior, 1 junior), working with 2 QA engineers, 2 business analysts, and the technical, project, delivery, and portfolio managers, up to CTO level.</li>
+            <li>About 30 two-week sprints (around 25 stories each) and 30 production releases delivered on a platform of four portfolios. The two sprints that slipped were caused by unclear priorities, late story handover, and urgent requests added mid-sprint.</li>
+            <li>Task allocation based on each developer's strengths and weaknesses, capacity planning that accounts for leave, and daily visibility through Jira filters and dashboards.</li>
+          </ul>
+
+          <details class="inner">
+            <summary><span class="chev" aria-hidden="true"></span>How I run a sprint</summary>
+            <div class="in">
+              <ol>
+                <li><b>Groom ahead.</b> While sprint N runs, I help the analysts prepare sprint N+1: story preparation, impact, business gaps, and whether an integration should consume or expose an API.</li>
+                <li><b>Definition of Ready gate.</b> At planning, only ready stories enter. I check that developers and QA understand the goal, the implementation steps, and the test cases.</li>
+                <li><b>Estimate and review.</b> The team estimates, I review outliers (why so high, why so low), and we agree an average. UI/UX questions are settled against Figma.</li>
+                <li><b>Allocate by capacity.</b> I take the team's real capacity, pull stories up to it, and assign them by skill and business background.</li>
+                <li><b>Support during the sprint.</b> Developers raise questions on the story, we resolve them with the analysts, and I guide by asking how they would approach it before giving the answer. Database and module design goes through the Technical Manager.</li>
+                <li><b>Triage bugs.</b> I check each bug: business gap, regression, enhancement, or a real defect. I set priority; QA sets severity. Rejected bugs go back to QA, valid ones go to the right owner (development, analysis, UI, or UX).</li>
+                <li><b>Quality gate.</b> A story with no open bugs is ready to release. At the end of the sprint I report per story and decide with the analysts whether a minor open bug blocks UAT.</li>
+                <li><b>UAT and release.</b> I prepare the deployment plan (applications, site properties, timers, configuration) for the DevOps role, support the UAT week alongside the current sprint, release to production on Thursday, and stay online with the operations team through the weekend.</li>
+              </ol>
+              <p class="mono">Review on every story: code, architecture and best practices, clean code, and AI Mentor findings.</p>
+            </div>
+          </details>
+
+          <details class="inner">
+            <summary><span class="chev" aria-hidden="true"></span>Refactoring and domain isolation</summary>
+            <div class="in">
+              <ul>
+                <li>Formed a refactoring team with the other team leads for three months and inventoried technical debt: architecture, performance, security, and maintainability.</li>
+                <li>On OutSystems 11, a release pulled in every application it depended on. We grouped modules and applications into business domains per portfolio and replaced strong dependencies with weak ones through Service Actions, so one portfolio can ship on its own.</li>
+                <li>Used Site Properties as feature toggles so a feature can ship disabled.</li>
+                <li>Tuned queries slower than 200 ms: removed joins and selected columns that were not needed, set limits and pagination, and redesigned queries, sometimes with AI help.</li>
+                <li>Result: roughly 30–40% of the refactoring plan in three months, and about 40–50% of the technical debt reported by AI Mentor cleared.</li>
+              </ul>
+            </div>
+          </details>
+
+          <details class="inner">
+            <summary><span class="chev" aria-hidden="true"></span>Automation and AI in delivery</summary>
+            <div class="in">
+              <ul>
+                <li><b>Release tickets.</b> Saves about 5 hours a week. A C# scheduled task reads the developers' Excel sheet, resolves applications from LifeTime or the database, and creates the release or deployment ticket in Jira with applications, site properties, and timers.</li>
+                <li><b>Daily management report.</b> Hours logged, bugs fixed, stories finished, and AI Mentor findings per developer, in a sheet and email. A scheduled AI agent gathers details from Teams and a .NET script builds the report; the plan is to make it fully scripted.</li>
+                <li><b>AI with OutSystems.</b> Connected an AI agent through MCP so it creates sub-tasks and notifications that follow our patterns, shared blocks, actions, and naming. Stories are pre-validated by AI against the Definition of Ready before the human review.</li>
+              </ul>
+            </div>
+          </details>
+
+          <details class="inner">
+            <summary><span class="chev" aria-hidden="true"></span>Working across teams</summary>
+            <div class="in">
+              <ul>
+                <li>Meetings with external bodies and other portfolios to split ownership of shared features, with their project managers, technical managers, team leads, and analysts.</li>
+                <li>Integrations with the CRM, the ERP (finance), and government systems, all over REST.</li>
+                <li>Environments are Dev, QA, UAT, and Production. Regular reports and ad-hoc requests for the portfolio manager and technical manager; sprint retrospectives and SOS meetings.</li>
+                <li>Proposed centralized logging, an API gateway, and single sign-on to management; they are awaiting approval.</li>
+              </ul>
+            </div>
+          </details>
+        </div>
+      </details>
+    </div>
+
+    <div class="stop">
+      <details class="role">
+        <summary>
+          <span class="meta">
+            <span class="when">Aug 2024 – Aug 2025</span>
+            <h3>Senior OutSystems Developer, Operations</h3>
+            <span class="org">Sure, outsourced to Infath</span>
+            <p class="one">Took over a live production system with no handover and became its reference for business logic.</p>
+          </span>
+          <span class="chev" aria-hidden="true"></span>
+        </summary>
+        <div class="body">
+          <ul>
+            <li>The system arrived from another vendor with no business documents, no high-level or low-level design, and no operations handover. There were development and operations groups; I was one of two people in operations at the start.</li>
+            <li>For every incident I traced and reverse-engineered the area first, then classified it: business issue, development bug, or operation request. Operation requests were handled in the database, with reports where needed.</li>
+            <li>Set up the operations process with Level 1 support: Level 1 faced the client and the ticketing system, and operations did the technical work and helped Level 1 judge whether a request was valid.</li>
+            <li>Within months, developers, portfolio managers, and the client were asking us how the system behaves.</li>
+            <li>Skills built: tracing, debugging, reverse engineering, SQL, reporting, and a deep view of the business.</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <div class="stop">
+      <details class="role">
+        <summary>
+          <span class="meta">
+            <span class="when">Jul 2021 – Aug 2024</span>
+            <h3>Software Developer, then Senior OutSystems Developer</h3>
+            <span class="org">Digination</span>
+            <p class="one">ABP and OutSystems side by side, promoted to Senior, mentoring newer developers.</p>
+          </span>
+          <span class="chev" aria-hidden="true"></span>
+        </summary>
+        <div class="body">
+          <details class="inner" open>
+            <summary><span class="chev" aria-hidden="true"></span>First 1.5 years: ABP and OutSystems in parallel</summary>
+            <div class="in">
+              <ul>
+                <li>As a junior, delivered complete stories from front end to back end with ABP Framework on .NET, and learned what each layer is responsible for.</li>
+                <li>Built Central Admin in ABP for King Saud Medical City (KSMC): roles, permissions, users, and configuration.</li>
+                <li>Built the KSMC CRM in OutSystems on the Case Management Framework, with integration between the two systems.</li>
+              </ul>
+            </div>
+          </details>
+          <details class="inner">
+            <summary><span class="chev" aria-hidden="true"></span>Promoted to Senior: delivery, mentoring, automation</summary>
+            <div class="in">
+              <ul>
+                <li>Promoted to Senior in Jul 2023. Taught and monitored new developers and assigned their tasks; several of them now run large projects and still thank me for it.</li>
+                <li>Agile on Azure Boards: grooming, planning, retrospectives, reviews with QC and the client, releases and deployments, operations, sprint reports covering stories, bugs, and progress, business gap analysis, and change requests.</li>
+                <li>Git and merging in OutSystems; BDD tests.</li>
+                <li>With the LifeTime API and Python, created solutions automatically and found modules with broken dependencies.</li>
+                <li>Published a Forge component for client-side form validation (JavaScript) that limits inputs to numbers, letters, or files.</li>
+                <li>Delivered projects on site for SCISP (10 months), MOT (3 months), SEC (3 months), and Military Industries (2 months), including the OnBase work described under Challenges.</li>
+              </ul>
+            </div>
+          </details>
+        </div>
+      </details>
+    </div>
+
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="sec-head"><span class="mono">02</span><h2>Projects and integrations</h2></div>
+  <p class="sub">What I built or integrated, and what my part was.</p>
+  <div class="grid2">
+    <details class="card dis">
+      <summary><span class="t"><h3>Infath platform</h3><span class="s">OutSystems 11, four portfolios, 400+ applications</span></span><span class="chev" aria-hidden="true"></span></summary>
+      <div class="in">
+        <p><span class="tag">Operations</span><span class="tag">Team lead</span></p>
+        <p>A large government platform split into portfolios with their own teams. I worked on it as an operations engineer, then lead the Beneficiaries portfolio. It integrates with a CRM, an ERP, and government APIs.</p>
+      </div>
+    </details>
+    <details class="card dis">
+      <summary><span class="t"><h3>KSMC CRM</h3><span class="s">OutSystems, Case Management Framework, on site, about 18 months with Central Admin</span></span><span class="chev" aria-hidden="true"></span></summary>
+      <div class="in">
+        <p>Customer service portal for King Saud Medical City, built on the Case Management Framework and integrated with the ABP admin system. <a href="https://ksmc.med.sa/CRMIPortal/">Public portal</a></p>
+      </div>
+    </details>
+    <details class="card dis">
+      <summary><span class="t"><h3>KSMC Central Admin</h3><span class="s">ABP Framework, .NET</span></span><span class="chev" aria-hidden="true"></span></summary>
+      <div class="in">
+        <p>An administration portal for roles, permissions, users, and configuration. I worked across its layers, from API to Entity Framework Core, and delivered stories end to end.</p>
+      </div>
+    </details>
+    <details class="card dis">
+      <summary><span class="t"><h3>SCISP</h3><span class="s">Strategic partnerships, OutSystems, on site, 10 months</span></span><span class="chev" aria-hidden="true"></span></summary>
+      <div class="in">
+        <p><span class="tag">Senior developer</span><span class="tag">Client contact</span></p>
+        <p>Right hand of the team lead. I delivered the complex stories, served as the on-site contact for the client (project status and solving whatever came up), and covered the team lead role, including taking over and handing back the sprint, when he was away. I knew the business and the code end to end.</p>
+      </div>
+    </details>
+    <details class="card dis">
+      <summary><span class="t"><h3>MOT</h3><span class="s">Ministry of Transport, OutSystems, on site, 3 months</span></span><span class="chev" aria-hidden="true"></span></summary>
+      <div class="in">
+        <p>Joined an existing project with a full team as a senior developer, responsible for finishing stories at the highest quality.</p>
+      </div>
+    </details>
+    <details class="card dis">
+      <summary><span class="t"><h3>SEC: OnBase integration</h3><span class="s">.NET extension, document management, on site, 3 months</span></span><span class="chev" aria-hidden="true"></span></summary>
+      <div class="in">
+        <p>I was the only developer and tester, and I gathered and analyzed the requirements with the project manager. Connected an OutSystems application to OnBase to insert documents and query them by keywords. The SDK was there but unclear, so most of the work was working out how it behaves. See the full story under Challenges.</p>
+      </div>
+    </details>
+    <details class="card dis">
+      <summary><span class="t"><h3>Military Industries: OnBase and data migration</h3><span class="s">.NET, Hangfire, OnBase, on site, 2 months</span></span><span class="chev" aria-hidden="true"></span></summary>
+      <div class="in">
+        <p>A second OnBase project. Under the team lead's direction I ran a large data migration using Hangfire, a .NET library for background jobs. I also connected the website to OnBase for file management, added watermarking, and organized the files.</p>
+      </div>
+    </details>
+    <details class="card dis">
+      <summary><span class="t"><h3>Client-Side Form Validation</h3><span class="s">OutSystems Forge component, JavaScript</span></span><span class="chev" aria-hidden="true"></span></summary>
+      <div class="in">
+        <p>Restricts an input to numbers only, letters only, or file types, validated in the browser. <a href="https://www.outsystems.com/forge/component-overview/13066/client-side-form-validation">Open on Forge</a></p>
+      </div>
+    </details>
+    <details class="card dis">
+      <summary><span class="t"><h3>LifeTime automation</h3><span class="s">LifeTime API, Python, C#, Jira API</span></span><span class="chev" aria-hidden="true"></span></summary>
+      <div class="in">
+        <p>Python tooling that creates solutions and finds modules with broken dependencies; later a C# scheduled task that builds release tickets in Jira from a developer sheet.</p>
+      </div>
+    </details>
+    <details class="card dis">
+      <summary><span class="t"><h3>Management reporting</h3><span class="s">AI agent, .NET, Excel, email</span></span><span class="chev" aria-hidden="true"></span></summary>
+      <div class="in">
+        <p>A daily automated report on hours, bugs, stories, and AI Mentor findings per developer, sent to management and the team.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- CHALLENGES -->
+<section id="challenges">
+  <div class="sec-head"><span class="mono">03</span><h2>Hard problems and how I solved them</h2></div>
+  <p class="sub">Six situations, written without client-internal detail.</p>
+  <div class="grid2">
+
+    <details class="card dis case" open>
+      <summary><span class="t"><h3>A live system with no handover</h3><span class="s">Operations, Aug 2024</span></span><span class="chev" aria-hidden="true"></span></summary>
+      <div class="in">
+        <dl>
+          <dt>Situation</dt><dd>A production platform arrived from another vendor with no business documents, no design documents, and no operations playbook.</dd>
+          <dt>Action</dt><dd>Reverse-engineered each problem as it came, classified it (business, bug, operation request), and wrote the operations process with Level 1.</dd>
+          <dt>Result</dt><dd>Developers, managers, and the client began asking us how the system works.</dd>
+        </dl>
+      </div>
+    </details>
+
+    <details class="card dis case">
+      <summary><span class="t"><h3>OnBase with an unclear SDK</h3><span class="s">Integration, Digination</span></span><span class="chev" aria-hidden="true"></span></summary>
+      <div class="in">
+        <dl>
+          <dt>Situation</dt><dd>OnBase had to be integrated. An SDK existed, but it was unclear, and the vendor site did not explain how the interface behaves.</dd>
+          <dt>Action</dt><dd>Experimented with .NET until the first connection worked, then expanded to insert and read documents and to query by keywords. Worked out how OnBase is structured. No AI was involved.</dd>
+          <dt>Result</dt><dd>A working extension. OutSystems can call it directly, or call OnBase over REST or SOAP.</dd>
+        </dl>
+      </div>
+    </details>
+
+    <details class="card dis case">
+      <summary><span class="t"><h3>A large data migration with Hangfire</h3><span class="s">Military Industries, Digination</span></span><span class="chev" aria-hidden="true"></span></summary>
+      <div class="in">
+        <dl>
+          <dt>Situation</dt><dd>On a two-month OnBase project, a large amount of data had to be migrated, and the site also needed proper file management.</dd>
+          <dt>Action</dt><dd>Following the team lead's direction, I ran the migration as Hangfire background jobs in .NET, so the work happened outside user requests. I connected the site to OnBase for file management, added watermarking, and organized the files.</dd>
+          <dt>Result</dt><dd>The data moved into OnBase and the files became organized and protected.</dd>
+        </dl>
+      </div>
+    </details>
+
+    <details class="card dis case">
+      <summary><span class="t"><h3>A production incident, contained in a day</h3><span class="s">Production support, Infath</span></span><span class="chev" aria-hidden="true"></span></summary>
+      <div class="in">
+        <dl>
+          <dt>Situation</dt><dd>A new process, released without testing and without a feature toggle, ran for a day and changed the state of thousands of records across hundreds of projects. Downstream integrations with an external government body were affected.</dd>
+          <dt>Action</dt><dd>Stopped the system to prevent more damage, traced the process and the tables it changed, backed those tables up, and rebuilt the earlier state of every affected record. Coordinated corrections with the external body and closed the related requests. A full rollback of code and database was possible but would have lost the data entered after the release, so I chose a targeted restore.</dd>
+          <dt>Result</dt><dd>Service resumed the same day with data consistent.</dd>
+          <dt>Change</dt><dd>New processes now ship behind a feature toggle and pass a release gate.</dd>
+        </dl>
+      </div>
+    </details>
+
+    <details class="card dis case">
+      <summary><span class="t"><h3>A ranking that kept reshuffling</h3><span class="s">Assignment engine, Infath</span></span><span class="chev" aria-hidden="true"></span></summary>
+      <div class="in">
+        <dl>
+          <dt>Situation</dt><dd>Beneficiaries were ranked for assignment by one qualification date shared by all categories. Every change of qualification pushed a beneficiary to the end of the ranking, and the changes kept coming, so complaints were frequent.</dd>
+          <dt>Action</dt><dd>I proposed and helped deliver a qualification date per category. A downgrade to category B no longer moves the beneficiary within B, and an upgrade to A places them last in A only, without touching B.</dd>
+          <dt>Result</dt><dd>Stable, explainable rankings and fewer complaints. The same approach fixed several other gaps in the assignment engines.</dd>
+        </dl>
+      </div>
+    </details>
+
+    <details class="card dis case">
+      <summary><span class="t"><h3>Large features on short notice</h3><span class="s">Delivery, Infath</span></span><span class="chev" aria-hidden="true"></span></summary>
+      <div class="in">
+        <dl>
+          <dt>Situation</dt><dd>Big features arrived late, sometimes mid-sprint, with fixed dates.</dd>
+          <dt>Action</dt><dd>I raise the schedule risk first. Once the decision stands, I rebalance the sprint, push the team to deliver, and protect performance and code review.</dd>
+          <dt>Result</dt><dd>About 30 two-week sprints delivered; two slipped, and I can name the causes.</dd>
+        </dl>
+      </div>
+    </details>
+
+  </div>
+</section>
+
+<!-- STRENGTHS -->
+<section id="strengths">
+  <div class="sec-head"><span class="mono">04</span><h2>Strengths</h2></div>
+  <div class="grid2">
+    <div class="card"><h3>Owns the whole delivery cycle</h3><p>Grooming, Definition of Ready, sprint, QA, UAT, release, and weekend support, not only the code.</p></div>
+    <div class="card"><h3>Makes sense of undocumented systems</h3><p>Reverse engineering from the operations years and the OnBase integration.</p></div>
+    <div class="card"><h3>Leads senior engineers</h3><p>Matches work to each person's strengths and coaches by asking before telling.</p></div>
+    <div class="card"><h3>Architecture and performance</h3><p>Domain isolation, weak dependencies, feature toggles, and query tuning on a large platform.</p></div>
+    <div class="card"><h3>Automates the routine</h3><p>LifeTime API, Python, C#, Jira, and AI agents to remove manual release and reporting work.</p></div>
+    <div class="card"><h3>Reliability habits</h3><p>Logging, structured exceptions, API status-code handling, deadlock handling, and retry logic in integrations.</p></div>
+  </div>
+</section>
+
+<!-- GROWTH -->
+<section id="growth">
+  <div class="sec-head"><span class="mono">05</span><h2>What I am learning now</h2></div>
+  <p class="sub">A live section, still under development. One hour a day, aimed at understanding the whole process and its key concepts, and practiced on a real project instead of read about. Updated November 2026.</p>
+
+  <details class="card dis" open>
+    <summary><span class="t"><h3>DevOps track</h3><span class="s">.NET and Angular practice project, one hour a day</span></span><span class="chev" aria-hidden="true"></span></summary>
+    <div class="in">
+      <p>OutSystems LifeTime gave me a managed delivery pipeline. This track is about understanding what sits underneath that idea in a code-first stack, so I can build or lead a DevOps process anywhere.</p>
+      <div class="rows">
+        <div class="row"><div><b>1. Continuous integration</b><span>GitHub Actions builds and tests the .NET and Angular project on every push and pull request.</span></div><span class="pill now">In progress</span></div>
+        <div class="row"><div><b>2. Docker and containers</b><span>Dockerfiles, images, multi-stage builds, and Compose for the same project. Docker Desktop with WSL2 is being set up.</span></div><span class="pill now">In progress</span></div>
+        <div class="row"><div><b>3. Continuous delivery</b><span>Deploy the container from the pipeline through environments, with secrets, approvals, and rollback.</span></div><span class="pill next">Planned</span></div>
+        <div class="row"><div><b>4. Quality gates and branching</b><span>Pull-request checks, test and static-analysis gates, and a branching strategy; the code-first counterpart of AI Mentor.</span></div><span class="pill next">Planned</span></div>
+        <div class="row"><div><b>5. Logging and monitoring</b><span>Structured logs, metrics, and alerts, as groundwork for the centralized logging I proposed at work.</span></div><span class="pill next">Planned</span></div>
+        <div class="row"><div><b>6. Microservices</b><span>Two services behind a gateway, compared with how OutSystems modularizes.</span></div><span class="pill next">Planned</span></div>
+      </div>
+    </div>
+  </details>
+
+  <details class="card dis">
+    <summary><span class="t"><h3>Other topics on the list</h3><span class="s">Each has a concrete practice project</span></span><span class="chev" aria-hidden="true"></span></summary>
+    <div class="in">
+      <div class="rows">
+        <div class="row"><div><b>Single sign-on (SAML, OIDC)</b><span>I have used Active Directory; next is a full SAML and OIDC setup, in code and in OutSystems.</span></div><span class="pill next">Planned</span></div>
+        <div class="row"><div><b>OutSystems Mobile and PWA</b><span>A mobile app with full offline sync, built from scratch.</span></div><span class="pill next">Planned</span></div>
+        <div class="row"><div><b>Advanced SQL</b><span>Execution plans, isolation levels, and deadlocks at the database level.</span></div><span class="pill next">Planned</span></div>
+        <div class="row"><div><b>C# design patterns</b><span>SOLID, Repository, Strategy, CQRS with MediatR, applied to a real codebase.</span></div><span class="pill next">Planned</span></div>
+        <div class="row"><div><b>AI agents beyond prompting</b><span>Build an MCP server, add evaluations for story validation, and set guardrails.</span></div><span class="pill next">Planned</span></div>
+        <div class="row"><div><b>Elasticsearch</b><span>Full-text search over a real data set.</span></div><span class="pill next">Planned</span></div>
+      </div>
+    </div>
+  </details>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="sec-head"><span class="mono">06</span><h2>Skills</h2></div>
+  <div class="skillgrid">
+    <div class="card"><h3>Daily use</h3>
+      <div class="chips">
+        <span>OutSystems Reactive Web</span><span>Service Center</span><span>LifeTime</span><span>AI Mentor</span><span>Aggregates and Advanced SQL</span><span>Service Actions</span><span>BPT and Timers</span><span>Case Management Framework</span><span>REST</span><span>JSON</span><span>.NET extensions</span><span>C#</span><span>LINQ</span><span>SQL</span><span>Jira</span><span>Agile and Scrum</span><span>Code review</span><span>Prompt engineering</span><span>MCP</span>
+      </div>
+    </div>
+    <div class="card"><h3>Working knowledge</h3>
+      <div class="chips">
+        <span>ABP Framework</span><span>Entity Framework Core</span><span>SOAP</span><span>OnBase</span><span>Dynamics 365 CRM</span><span>JWT</span><span>Active Directory</span><span>Python</span><span>Azure Boards</span><span>BDD Framework</span><span>Dependency Injection</span><span>Clean Architecture</span><span>DDD concepts</span><span>ODC fundamentals</span><span>OutSystems offline sync actions</span>
+      </div>
+    </div>
+    <div class="card"><h3>Learning now</h3>
+      <div class="chips">
+        <span>GitHub Actions</span><span>Docker</span><span>Microservices</span><span>SAML and OIDC</span><span>Mobile and PWA</span><span>SQL execution plans</span><span>Design patterns</span><span>Elasticsearch</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+  <div class="sec-head"><span class="mono">07</span><h2>Education and early work</h2></div>
+  <div class="grid2">
+    <div class="card">
+      <h3>B.Sc. Computer Science</h3>
+      <p>Faculty of Computers and Information, Assiut University, Sep 2016 – Jun 2020. GPA 3.15 (Very Good).</p>
+      <p class="mono">Algorithms, advanced databases, machine learning, neural networks, networks, embedded systems, graphics, C#, C++, .NET. Followed by one year of mandatory military service.</p>
+    </div>
+    <div class="card">
+      <h3>Graduation projects</h3>
+      <ul>
+        <li>Search across video collections by text or image that returns the matching video and the moment inside it, The whole system is Python with an SQL database. I was analyst, developer, tester, and leader of the team. The use case is searching city camera footage.</li>
+        <li>A mobile app that photographs multiple-choice answer sheets; a Python service grades them and returns the score and the right and wrong answers. Android and Python; I was analyst, developer, and team leader.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Problem solving</h3>
+      <p>10th place out of 50 teams in the Upper Egypt (El-Saeedi) programming contest, 2018. Practice on Codeforces and HackerRank.</p>
+    </div>
+    <div class="card">
+      <h3>Certifications</h3>
+      <ul>
+        <li>OutSystems Associate Reactive Developer</li>
+        <li>OutSystems ODC Associate Developer</li>
+        <li>SQL (Intermediate), HackerRank</li>
+        <li>ACPC Certificate, Problem Solving</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Contact: <a href="mailto:ahosny2420@gmail.com">ahosny2420@gmail.com</a>. Client names and incident details are limited to what is public or anonymized.</p>
+    <p class="mono">Updated November 2026</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var btn=document.getElementById('toggleAll');
+  if(!btn) return;
+  btn.addEventListener('click',function(){
+    var open=btn.getAttribute('aria-pressed')!=='true';
+    document.querySelectorAll('details').forEach(function(d){ d.open=open; });
+    btn.setAttribute('aria-pressed',open?'true':'false');
+    btn.textContent=open?'Collapse all':'Expand all';
+  });
+})();
+</script>
+</body>
+</html>
